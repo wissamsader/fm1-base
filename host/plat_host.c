@@ -37,6 +37,8 @@
  *                                flash's byte at ADDR, as plat_data reads it; -1 outside its windows)
  *   reboot                       re-run boot from the simulated flash (persistence test)
  *                                (the app's plat_restart does the same, at the end of its millisecond; expect restarts)
+ *   update                       (APP_UPDATE_SAVE) an update session starts: app_panic, app_update_save, then the screen
+ *                                again as after a session that commits nothing ("reboot" next: the install's restart)
  *   crash [PC [VEC]]             a CPU fault (hex; 02012344, 3): the .noinit crash record as felucca-bsp's fm1_fault_c
  *                                writes it (its count one up, the registers a pattern), then the restart; the boot keeps
  *                                it in the flash history (device/crashlog.c) as the device's does
@@ -2749,6 +2751,12 @@ int main(int argc, char **argv)
                 printf("  ok   flash_load %s: the data windows and %u store objects\n", a, (unsigned)k);
             else
                 printf("  ok   flash_dump %s\n", a);
+#ifdef APP_UPDATE_SAVE
+        } else if (!strcmp(cmd, "update")) {    /* an update session starts, as device/main_fm1.c's main loop takes it */
+            app_panic();
+            app_update_save();
+            app_ui_init();                      /* (as a session that commits nothing; "reboot" next: an install's restart) */
+#endif
         } else if (!strcmp(cmd, "reboot")) {
 #ifdef APP_HOST_REBOOT
             app_host_reboot();                  /* the app forgets what RAM would (app.h) */

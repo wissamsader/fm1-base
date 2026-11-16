@@ -1466,6 +1466,11 @@ static void fm1_main(void)
         if (usb.ota_req) {
             usb.ota_req = 0;
             app_panic();                            /* silence: the update rewrites the flash */
+#ifdef APP_UPDATE_SAVE
+            app_update_save();                      /* what the app has not saved yet, saved now, whatever plays: the
+                                                     * firmware that comes may be another, and this one's work is found
+                                                     * again when it is put back (plat.h) */
+#endif
             fm1_clock_restore();                    /* (the update loader at the stock clock) */
             if (flash_ok)
                 ota_session();                      /* returns only if nothing was committed */

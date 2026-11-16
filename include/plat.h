@@ -642,6 +642,13 @@ int app_stats_quiet(void);
  *   APP_LOG         void app_log(void (*line)(const char *t))   the development readout over USB-MIDI (F0 7D 4C 47 F7,
  *                   "LG"): the app's own lines, each through line (ASCII, 40 characters at most), before its "end".
  *                   Main loop
+ *   APP_UPDATE_SAVE void app_update_save(void)   an update session starts (the computer's upgrade command): once, right
+ *                   after app_panic, before anything of the update is read or written. Everything the app has not
+ *                   saved yet is saved here, whatever is playing (an app that saves lazily, in quiet moments): the
+ *                   firmware installed may be another one, and this one's work is found again when it comes back.
+ *                   Main loop, the interrupts on (the render and the tick still run); a session that commits nothing
+ *                   returns to the app (app_ui_init), so the app stays as it was. The host simulator: the script's
+ *                   "update"
  *
  * Screen mirroring (fm1.toml mirror = true: FM1B_MIRROR 1, device/mirror.c): the screen and the panel live on a
  * computer (base/web/mirror/, tools/fm1_mirror.py), and the panel played from it. Nothing for the app to call; an app
